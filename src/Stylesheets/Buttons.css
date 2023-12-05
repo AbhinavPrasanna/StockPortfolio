@@ -1,0 +1,39 @@
+.TransparentButton{
+    background:transparent;
+    border: none;
+    cursor:pointer;
+}
+.TransparentButton2{
+    background:transparent;
+    border: none;
+    cursor:pointer;
+}
+
+.TabText{
+    color: rgba(0, 0, 0, 0.60);
+    text-align: center;
+    font-family: Baloo 2;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%; /* 24px */
+    letter-spacing: 0.6px;
+}
+.SignUpText{
+    color: #FFF;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    font-family: Baloo 2;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 100%; /* 24px */
+    letter-spacing: 0.6px;
+}
+
+.SignUpButtonLayout{
+    width: 138px;
+    height: 68px;
+    flex-shrink: 0;
+    border-radius: 11.521px;
+    background: #2259E7;
+}

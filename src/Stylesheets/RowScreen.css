@@ -1,0 +1,36 @@
+.row {
+}
+.TransparentButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+.row_posters{
+    display:flex;
+    overflow-y: hidden;
+    overflow-x: scroll;
+    padding: 45px;
+}
+.row_posters::-webkit-scrollbar{
+}
+
+.row_poster{
+    object-fit: contain;
+    width:100%;
+    max-height:100px;
+    gap:4%;
+    transition: transform 450ms;
+}
+
+.row_poster:hover{
+    transform:scale(1.08);
+}
+
+.RowTitleTypography{
+    color: #000;
+    font-family: Baloo 2;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
