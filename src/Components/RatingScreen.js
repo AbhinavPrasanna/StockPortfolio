@@ -27,7 +27,7 @@ function RatingScreen() {
     new Card(22,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/hiltonhonorsamex.png","Hilton Honors","Personal","Chase",true,3.5),
     new Card(23,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/ihgpremiercard.png","IHG Rewards Card","Personal","Chase",true,3.5),
       ];
-    const TopRated = cards.filter(card => card.rating == 5.0);
+    const TopRated = cards.filter(card => card.rating === 5.0);
     const HighRated = cards.filter(card => card.rating >= 4.0 && card.rating < 5.0);
     const MediumRated = cards.filter(card => card.rating >= 3.0 && card.rating < 4.0);
     const LowRated = cards.filter(card => card.rating < 3.0);
