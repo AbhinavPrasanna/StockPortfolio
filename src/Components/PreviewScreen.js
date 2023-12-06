@@ -13,7 +13,7 @@ function PreviewScreen() {
                     </button>
                     <Carousel.Caption>
                         <h3>Chase Sapphire Reserve</h3>
-                        <p>10x Points on Hotels and Dining and 5x on Flights, 50% Bonus</p>
+                        <p>10x Points on Hotels and Dining and 5x on Flights, 50% Point Redemption</p>
                     </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>

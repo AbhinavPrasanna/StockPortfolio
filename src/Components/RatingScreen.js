@@ -40,10 +40,18 @@ function RatingScreen() {
 
   return (
     <div>
-      <RowScreen title="Top Rated" cards={TopRated}/>
-      <RowScreen title="High Rated" cards={HighRated}/>
-      <RowScreen title="Medium Rated" cards={MediumRated}/>
-      <RowScreen title="Low Rated" cards={LowRated}/>
+      <div class="mt-5">
+          <RowScreen title="Top Rated" cards={TopRated}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="High Rated" cards={HighRated}/>
+      </div>
+      <div class="mt-5">
+         <RowScreen title="Medium Rated" cards={MediumRated}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Low Rated" cards={LowRated}/>
+      </div>
     </div>
   )
 }

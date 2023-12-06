@@ -39,7 +39,9 @@ function SearchScreen() {
   const SearchCards = cards.filter((card) => card.cardName.toLowerCase().includes(searchWord.toLowerCase()));
   return (
     <div>
-      <RowScreen title="" cards={SearchCards}/>
+      <div class="mt-5">
+          <RowScreen title="" cards={SearchCards}/>
+      </div>
     </div>
   )
 }

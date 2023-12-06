@@ -2,6 +2,9 @@ import React from 'react'
 import Card from './Card'
 import RowScreen from './RowScreen'
 import PreviewScreen from './PreviewScreen';
+import BankScreen from './BankScreen';
+import CardsScreen from './CardsScreen';
+import RatingScreen from './RatingScreen';
 
 function HomeScreen() {
   const cards = [
@@ -43,8 +46,11 @@ function HomeScreen() {
         <RowScreen title="Personal" cards={personalcards}/>
       </div>
       <div class="mt-5">
-        <RowScreen title="Buisness" cards={buisnesscards}/>
+        <RowScreen title="Business" cards={buisnesscards}/>
       </div>
+      <CardsScreen/>
+      <BankScreen/>
+      
     </div>
   )
 }

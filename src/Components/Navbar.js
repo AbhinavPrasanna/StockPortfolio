@@ -28,6 +28,7 @@ function Navbar() {
                     <button class="nav-item TransparentButton2 TabText" onClick={() => navigate("/bank")}>Banks</button>
                     <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/cards")}>Cards</button>
                     <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/ratings")}>Ranked</button>
+                    <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/forms")}>Forms</button>
                     <input class="nav-item TransparentButton2 TabText" onChange={handleSearch}placeholder="Search"/>
                 </div>
                 <button class="nav-item SignUpButtonLayout SignUpText me-5" onClick={() => navigate("/signup") }>Sign Up</button>

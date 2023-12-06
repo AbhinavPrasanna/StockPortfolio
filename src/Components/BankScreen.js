@@ -43,13 +43,27 @@ function BankScreen() {
     const Discover = cards.filter(card => card.bank === "Discover");
   return (
     <div>
-      <RowScreen title="Chase" cards={Chase}/>
-      <RowScreen title="Citi" cards={Citi}/>
-      <RowScreen title="Amex" cards={Amex}/>
-      <RowScreen title="Capital One" cards={CapitalOne}/>
-      <RowScreen title="Wells Fargo" cards={WellsFargo}/>
-      <RowScreen title="Bank of America" cards={BankOfAmerica}/>
-      <RowScreen title="Discover" cards={Discover}/>
+      <div class="mt-5">
+          <RowScreen title="Chase" cards={Chase}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Citi" cards={Citi}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Amex" cards={Amex}/>
+      </div>
+      <div class="mt-5">
+            <RowScreen title="Capital One" cards={CapitalOne}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Wells Fargo" cards={WellsFargo}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Bank of America" cards={BankOfAmerica}/>
+      </div>
+      <div class="mt-5">
+          <RowScreen title="Discover" cards={Discover}/>
+      </div>
     </div>
   )
 }
