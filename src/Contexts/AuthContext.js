@@ -20,13 +20,17 @@ export function AuthProvider(props){
         firstTimeLoggedIn,
         setFirstTimeLoggedIn
     }
-
-    
     Amplify.configure({
         Auth: {
             userPoolId:'us-west-1_OiPWtkZnI',
             userPoolWebClientId:'5uaj87gqpgrml7ii48d2uvju3j'
         }
 });
+
+    return (
+        <AuthContext.Provider value={value}>
+            {props.children}
+        </AuthContext.Provider>
+    )
     
 }
