@@ -6,3 +6,5 @@ class User{
         this.IsEditor = IsEditor;
     }
 }
+
+export default User;
