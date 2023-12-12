@@ -13,7 +13,7 @@ function PreviewScreen() {
                     </button>
                     <Carousel.Caption>
                         <h3>Chase Sapphire Reserve</h3>
-                        <p>10x Points on Hotels and Dining and 5x on Flights, 50% Point Redemption</p>
+                        <p>$900 Bonus when you spend $4,000</p>
                     </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
@@ -22,7 +22,7 @@ function PreviewScreen() {
                     </button>
                     <Carousel.Caption>
                         <h3>Chase Freedom Unlimited</h3>
-                        <p>$200 Bonus after you spend $500 in the first 3 months</p>
+                        <p>$200 Bonus when you spend $500</p>
                     </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
@@ -31,7 +31,7 @@ function PreviewScreen() {
                     </button>
                     <Carousel.Caption>
                         <h3>Chase Sapphire Preferred</h3>
-                        <p>60,000 Bonus Points after you spend $4,000 in the first 3 months</p>
+                        <p>$750 Bonus when you spend $4,000</p>
                     </Carousel.Caption>
                 </Carousel.Item>
                 <Carousel.Item>
