@@ -1,14 +1,14 @@
 import React, {useState,useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {useAuth} from '../Contexts/AuthContext'
 import {Auth} from 'aws-amplify'
-import {User} from '../Components/User'
+import { useAuth } from '../Contexts/AuthContext'
+import User from '../Components/Users'
 
 
 import {validEmail, validFirstName, validLastName} from '../Utils/Regex';
 
 function SignUpScreen() {
-  const {setAuthUser} = useAuth();
+  const {setAuthUser,setIsLoggedIn} = useAuth();
   const navigate = useNavigate();
 
   const [email,setEmail] = useState("");
@@ -39,7 +39,6 @@ function SignUpScreen() {
   const [isCodeActive , setIsCodeActive] = useState(false);
 
   useEffect(() => {
-    console.log(isValidEmail && isValidFirstName && isValidLastName);
     if(isValidEmail && isValidFirstName && isValidLastName) {
       setIsValidForm(true);
       setButtonOpacity(opacityvisible);
@@ -73,33 +72,35 @@ function SignUpScreen() {
   }
 
   const signUpUser = (e) => {
+    console.log("Signing Up User");
     Auth.signUp({'username':email,'password':password}).
     then (()=>{
       console.log("User Created");
       setIsCodeActive(true);
-      setAuthUser(new User(email,firstName,lastName));
+      setAuthUser(new User(email,firstName,lastName,false));
       setTextVisible(hidden);
       setCodeTextVisible(visible);
     })
     .catch((error)=>{
-      setPasswordMessage(error.message);
       console.log(error);
+      setPasswordMessage(error.message);
     })
   }
 
   const confirm = (e) => {
     Auth.confirmSignUp(email,code)
     .then(()=>{
-      navigate('/login');
-      setTextVisible(hidden);
-      setCodeTextVisible(visible);
+      navigate('/');
+      setIsLoggedIn(true);
     })
     .catch((error)=>{
+      console.log(error);
       setCodeMessage(error.message);
     })
   }
 
   const handleButtonClick = (e) => {
+    console.log("Button Clicked")
     if(!isCodeActive){
        signUpUser(e);
     }
@@ -125,7 +126,7 @@ function SignUpScreen() {
      </div>
      <div class="form-group">
       <label for="exampleInputPassword1" style={TextVisible}>Password</label>
-      <input type="password" class="form-control" id="exampleInputPassword1" onChange={handlePasswordChange}/>
+      <input type="password" class="form-control" id="exampleInputPassword1" onChange={handlePasswordChange} style={TextVisible}/>
       <small id="passwordHelp" class="form-text text-muted" style={TextVisible}>{passwordMessage}</small>
      </div>
      <div class="form-group">
@@ -133,7 +134,7 @@ function SignUpScreen() {
       <input type="text" class="form-control" id="exampleInputEmail" aria-describedby="emailHelp" style={CodeTextVisible} onChange={handleCode}/>
       <small id="emailHelp" class="form-text text-muted" style={CodeTextVisible}>{codeMessage}</small>
      </div>
-     <button type="submit" class="btn btn-primary" disabled={!isValidForm} style={ButtonOpacity} onSubmit={handleButtonClick}>Submit</button>
+     <button type="submit" class="btn btn-primary" disabled={!isValidForm} style={ButtonOpacity} onClick={handleButtonClick}>Submit</button>
     </div>
   )
 }
