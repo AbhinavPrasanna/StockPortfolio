@@ -50,7 +50,7 @@ function Navbar() {
                     <button class="nav-item TransparentButton2 TabText" onClick={() => navigate("/bank")}>Banks</button>
                     <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/cards")}>Cards</button>
                     <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/ratings")}>Ranked</button>
-                    <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/forms")}>Forms</button>
+                    <button class="nav-item TransparentButton2 TabText ms-5" onClick={() => navigate("/articles")}>Articles</button>
                     <input class="nav-item TransparentButton2 TabText" onChange={handleSearch}placeholder="Search"/>
                 </div>
                 {

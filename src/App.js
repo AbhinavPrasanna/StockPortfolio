@@ -11,7 +11,7 @@ import SearchScreen from './Components/SearchScreen';
 import BankScreen from './Components/BankScreen';
 import RatingScreen from './Components/RatingScreen';
 import HomeScreen from './Components/HomeScreen';
-import FormScreen from './Components/FormScreen';
+import ArticlesScreen from './Components/ArticlesScreen';
 
 function App() {
   return (
@@ -26,7 +26,7 @@ function App() {
         <Route path="/search" element={<SearchScreen />} />
         <Route path="/bank" element={<BankScreen />} />
         <Route path="/ratings" element={<RatingScreen />} />  
-        <Route path="/form" element={<FormScreen />} />
+        <Route path="/articles" element={<ArticlesScreen/>} />
       </Routes>
     </Router>
   );
