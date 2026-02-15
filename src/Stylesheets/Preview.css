@@ -1,3 +1,60 @@
-.Container{
-    background-color: 	#F5F5F5;
+.preview-wrapper {
+    background-color: #f5f5f5;
+}
+
+.preview-carousel .carousel-item {
+    min-height: 320px;
+    background-color: #2259e7;
+}
+
+.preview-slide-content {
+    min-height: 320px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.preview-card-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 260px;
+}
+
+.preview-card-image {
+    display: block;
+    margin: 0 auto;
+    width: clamp(180px, 30vw, 420px);
+    height: auto;
+    max-width: 100%;
+}
+
+.preview-caption {
+    left: 50%;
+    right: auto;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    width: min(90vw, 680px);
+    padding: 0.65rem 0.9rem;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 0.75rem;
+}
+
+.preview-caption-title {
+    margin-bottom: 0.35rem;
+    color: #fff;
+    font-size: clamp(1.05rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.preview-caption-text {
+    margin-bottom: 0;
+    color: #fff;
+    font-size: clamp(0.88rem, 1.6vw, 1.2rem);
+    font-weight: 600;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }

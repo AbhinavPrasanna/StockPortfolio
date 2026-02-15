@@ -1,15 +1,106 @@
 .LogoTypography{
-    color: #2259E7;
-    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    font-family: Black Han Sans;
-    font-size: 128px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 100%; /* 64px */
-    letter-spacing: 1.6px;
+    color: #1f4fd5;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0.4px;
+}
+
+.brand-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: 999px;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.brand-button:hover {
+    background-color: rgba(34, 89, 231, 0.1);
+    transform: translateY(-1px);
+}
+
+.brand-mark {
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.55rem;
+    background: linear-gradient(145deg, #2259e7, #4f7ef2);
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 800;
+    box-shadow: 0 6px 14px rgba(34, 89, 231, 0.35);
 }
 
 .Bar{
-    background-color: black;
+    background-color: transparent;
+}
+
+.navbar-search {
+    max-width: 220px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-link-text {
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.3px;
+}
+
+.navbar-link-text:hover {
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.navbar-search::placeholder {
+    color: rgba(0, 0, 0, 0.6);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.navbar-auth-text {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1.02rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.3px;
+    border-radius: 0.65rem;
+    padding: 0.55rem 1rem;
+}
+
+.navbar-signup-btn {
+    background-color: #2259e7;
+    border-color: #2259e7;
+    color: #fff;
+}
+
+.navbar-signup-btn:hover,
+.navbar-signup-btn:focus,
+.navbar-signup-btn:active {
+    background-color: #1a49c4;
+    border-color: #1a49c4;
+    color: #fff;
+}
+
+.navbar-login-btn {
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.navbar-login-btn:hover,
+.navbar-login-btn:focus,
+.navbar-login-btn:active {
+    background-color: #2259e7;
+    border-color: #2259e7;
+    color: #fff;
 }
 
