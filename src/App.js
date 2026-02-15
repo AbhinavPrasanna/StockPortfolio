@@ -13,6 +13,7 @@ import RatingScreen from './Components/RatingScreen';
 import HomeScreen from './Components/HomeScreen';
 import ArticlesScreen from './Components/ArticlesScreen';
 import CardDetailsScreen from './Components/CardDetailsScreen';
+import ArticleDetailsScreen from './Components/ArticleDetailsScreen';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
         <Route path="/bank" element={<BankScreen />} />
         <Route path="/ratings" element={<RatingScreen />} />  
         <Route path="/articles" element={<ArticlesScreen/>} />
+        <Route path="/article-details" element={<ArticleDetailsScreen />} />
         <Route path="/card-details" element={<CardDetailsScreen />} />
       </Routes>
     </Router>
