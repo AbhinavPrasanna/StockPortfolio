@@ -1,15 +1,22 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
 
 import '../Stylesheets/RowScreen.css'
 
 function RowScreen(props) {
+  const navigate = useNavigate();
   const title = props.title;
   return (
     <div className='row'>
         <h1 className='RowTitleTypography'>{title}</h1>
         <div className='row_posters'>
             {props.cards.map((card) => (
-              <button className='TransparentButton row_poster'   key={card.cardID}  data-testid='card_button'>
+              <button
+                className='TransparentButton row_poster'
+                key={`${title}-${card.cardID}-${card.cardName}`}
+                data-testid='card_button'
+                onClick={() => navigate('/card-details', { state: { card } })}
+              >
                 <img 
               
                 src={card.cardThumbnailURL} alt={card.cardName}

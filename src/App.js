@@ -12,6 +12,7 @@ import BankScreen from './Components/BankScreen';
 import RatingScreen from './Components/RatingScreen';
 import HomeScreen from './Components/HomeScreen';
 import ArticlesScreen from './Components/ArticlesScreen';
+import CardDetailsScreen from './Components/CardDetailsScreen';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/bank" element={<BankScreen />} />
         <Route path="/ratings" element={<RatingScreen />} />  
         <Route path="/articles" element={<ArticlesScreen/>} />
+        <Route path="/card-details" element={<CardDetailsScreen />} />
       </Routes>
     </Router>
   );
