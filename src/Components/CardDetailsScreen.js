@@ -28,8 +28,7 @@ function CardDetailsScreen() {
         />
         <h1 className="h2 fw-bold mb-3">{card.cardName}</h1>
         <p className="lead text-muted mx-auto" style={{ maxWidth: '700px' }}>
-          This is a sample card description. You can replace this section with real card details,
-          benefits, annual fee information, and reward highlights.
+          {card.cardDescription || 'This is a sample card description. You can replace this section with real card details, benefits, annual fee information, and reward highlights.'}
         </p>
       </div>
     </Container>
