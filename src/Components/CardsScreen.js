@@ -37,10 +37,10 @@ function CardsScreen() {
     const noannualfee = cards.filter(card => card.annualfee === false);
   return (
     <div>
-      <div class="mt-5">
+      <div className="mt-5">
         <RowScreen title="No Annual Fee" cards={noannualfee}/>
       </div>
-      <div class="mt-5">
+      <div className="mt-5">
         <RowScreen title="Annual Fee" cards={annualfee}/>
       </div>
     </div>

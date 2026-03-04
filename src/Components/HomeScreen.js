@@ -1,52 +1,128 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from './Card'
 import RowScreen from './RowScreen'
 import PreviewScreen from './PreviewScreen';
 import BankScreen from './BankScreen';
 import CardsScreen from './CardsScreen';
-import RatingScreen from './RatingScreen';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
+const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/';
+
+const HOME_SCREEN_CARDS_QUERY = `
+  query HomeScreenCards($size: Int!) {
+    cards(page: 0, size: $size) {
+      content {
+        id
+        cardName
+        cardType
+        cardBank
+        hasAnnualFee
+        rating
+        imageSourceUrl
+      }
+    }
+  }
+`;
+
+function resolveImageUrl(graphqlCard) {
+  if (graphqlCard.imageSourceUrl) {
+    return graphqlCard.imageSourceUrl;
+  }
+
+  if (graphqlCard.imageS3Key) {
+    if (graphqlCard.imageS3Key.startsWith('http://') || graphqlCard.imageS3Key.startsWith('https://')) {
+      return graphqlCard.imageS3Key;
+    }
+    return `${S3_IMAGE_BASE_URL}${graphqlCard.imageS3Key}`;
+  }
+
+  return `https://dummyimage.com/220x140/1f2937/ffffff&text=${encodeURIComponent(graphqlCard.cardName)}`;
+}
+
+function mapGraphqlCardToCard(graphqlCard) {
+  return new Card(
+    Number(graphqlCard.id),
+    resolveImageUrl(graphqlCard),
+    graphqlCard.cardName,
+    graphqlCard.cardType,
+    graphqlCard.cardBank,
+    graphqlCard.hasAnnualFee,
+    graphqlCard.rating
+  );
+}
+
+function isBusinessCardType(type) {
+  const normalizedType = (type || '').toLowerCase();
+  return normalizedType.includes('business') || normalizedType === 'buisness';
+}
 
 function HomeScreen() {
-  const cards = [
-    new Card(1,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/sapphirepreferredcard.png","Chase Sapphire Preferred Card", "Personal", "Chase",true,5.0),
-    new Card(2,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/citicustomcash.png", "Citi Custom Cash", "Personal", "Citi",true,5.0),
-    new Card(3,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedomunlimitedcard.png", "Chase Freedom Unlimited", "Personal", "Chase",false,5.0),
-    new Card(4,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkpreferredcard.png", "Chase Ink Preferred Card", "Buisness", "Chase",false,4.0),
-    new Card(5,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkcash.png", "Chase Ink Cash Card", "Buisness", "Chase",false,5.0),
-    new Card(6,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkunlimitedcard.png", "Chase Ink Unlimited Card", "Buisness", "Chase",false,5.0),
-    new Card(8, "https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/costcoanywherecard.png","Costco Anywhere Visa Card", "Personal", "Citi",true,5.0),
-    new Card(9,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexplatinum.png","Amex Platnium Card", "Personal", "Amex",true,3.0),
-    new Card(10,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexbluecashpreferred.jpg","Amex Blue Cash Preferred", "Personal", "Amex",true,4.0),
-    new Card(11,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexbluecash.jpg","Amex Blue Card", "Personal", "Amex",false,4.5),
-    new Card(12,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/venturexcard.jpg","Capital One Venture Card", "Personal", "Capital One",4.5),
-    new Card(13,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/southwestpluscard.png","Chase Southwest Plus Card", "Personal", "Chase",true,4.0),
-    new Card(14,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/unitedexplorercard.png","Chase United Explorer Card", "Personal", "Chase",true,4.0),
-    new Card(15,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/primevisacard.png","Chase Prime Visa Card", "Personal", "Chase",true,4.8),
-    new Card(16,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wellsfargoautograph.png","Wells Fargo Autograph", "Personal", "Wells Fargo",false,4.3),
-    new Card(17,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wellsfargoreflect.png","Wells Fargo Reflect", "Personal", "Wells Fargo",false,4.3),
-    new Card(18,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wfactivecash.png","Wells Fargo Active Cash", "Personal", "Wells Fargo",false,5.0),
-    new Card(19,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedomflexcard.png","Chase Freedom Flex","Personal","Chase",false,5.0),
-    new Card(20,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/mariottbonvoypremier.png","Mariott Bonvoy Premier","Personal","Chase",true,3.5),
-    new Card(21,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/hiltonhonors.jpg","Hilton Honors","Personal","Chase",true,3.5),
-    new Card(22,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/hiltonhonorsamex.png","Hilton Honors","Personal","Chase",true,3.5),
-    new Card(23,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/ihgpremiercard.png","IHG Rewards Card","Personal","Chase",true,3.5),
-    new Card(24,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/sapphirereservecard.png","Chase Sapphire Reserve Card","Personal","Chase",true,5.0),
-    new Card(25,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/discoverit.jpeg","Discover IT Card","Personal","Discover",true,3.5),
-    new Card(25,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedom_rise_card.png","Chase Freedom Rise","Personal","Chase",true,3.5),
-    new Card(26,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/slate_edge_card.png", "Chase Slate Edge", "Personal", "Chase",true,3.0),
-    new Card(27,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/bankamericard.png", "Bank of America BankAmericard", "Personal", "Bank of America",true,3.0),
-    new Card(27,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/citipremiercard.png", "Citi Premier Card", "Personal", "Citi",true,3.5),
-      ];
-    const personalcards = cards.filter(card => card.type === "Personal");
-    const buisnesscards = cards.filter(card => card.type === "Buisness");
+  const [personalcards, setPersonalCards] = useState([]);
+  const [businesscards, setBusinessCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadHomeCards() {
+      try {
+        setLoading(true);
+        setErrorMessage('');
+
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: HOME_SCREEN_CARDS_QUERY,
+            variables: {
+              size: 300,
+            },
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`GraphQL request failed with status ${response.status}`);
+        }
+
+        const result = await response.json();
+        if (result.errors?.length) {
+          throw new Error(result.errors[0].message || 'GraphQL error while loading cards');
+        }
+
+        const allCards = (result.data?.cards?.content || []).map(mapGraphqlCardToCard);
+        const dedupedCards = Array.from(new Map(allCards.map((card) => [card.cardID, card])).values());
+        const business = dedupedCards.filter((card) => isBusinessCardType(card.type));
+        const personal = dedupedCards.filter((card) => !isBusinessCardType(card.type));
+
+        setPersonalCards(personal);
+        setBusinessCards(business);
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setErrorMessage('Unable to load card data right now.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadHomeCards();
+    return () => controller.abort();
+  }, []);
+
   return (
     <div>
       <PreviewScreen/>
-      <div class="mt-5">
+      {loading && <p>Loading cards...</p>}
+      {errorMessage && <p>{errorMessage}</p>}
+      <div className="mt-5">
         <RowScreen title="Personal" cards={personalcards}/>
       </div>
-      <div class="mt-5">
-        <RowScreen title="Business" cards={buisnesscards}/>
+      <div className="mt-5">
+        <RowScreen title="Business" cards={businesscards}/>
       </div>
       <CardsScreen/>
       <BankScreen/>
