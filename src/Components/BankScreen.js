@@ -1,68 +1,139 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Card from './Card'
 import RowScreen from './RowScreen';
-import { Row } from 'react-bootstrap';
+
+const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
+const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/';
+
+const BANK_ROWS_QUERY = `
+  query BankRows($size: Int!) {
+    chase: cards(page: 0, size: $size, bank: "Chase") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    citi: cards(page: 0, size: $size, bank: "Citi") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    amex: cards(page: 0, size: $size, bank: "Amex") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    capitalOne: cards(page: 0, size: $size, bank: "Capital One") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    wellsFargo: cards(page: 0, size: $size, bank: "Wells Fargo") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    bankOfAmerica: cards(page: 0, size: $size, bank: "Bank of America") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+    discover: cards(page: 0, size: $size, bank: "Discover") {
+      content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
+    }
+  }
+`;
+
+function resolveImageUrl(graphqlCard) {
+  if (graphqlCard.imageSourceUrl) return graphqlCard.imageSourceUrl;
+  if (graphqlCard.imageS3Key) {
+    if (graphqlCard.imageS3Key.startsWith('http://') || graphqlCard.imageS3Key.startsWith('https://')) {
+      return graphqlCard.imageS3Key;
+    }
+    return `${S3_IMAGE_BASE_URL}${graphqlCard.imageS3Key}`;
+  }
+  return `https://dummyimage.com/220x140/1f2937/ffffff&text=${encodeURIComponent(graphqlCard.cardName)}`;
+}
+
+function toCard(graphqlCard) {
+  return new Card(
+    Number(graphqlCard.id),
+    resolveImageUrl(graphqlCard),
+    graphqlCard.cardName,
+    graphqlCard.cardType,
+    graphqlCard.cardBank,
+    graphqlCard.hasAnnualFee,
+    graphqlCard.rating
+  );
+}
 
 function BankScreen() {
-  const cards = [
-    new Card(1,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/sapphirepreferredcard.png","Chase Sapphire Preferred Card", "Personal", "Chase",true,5.0),
-    new Card(2,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/citicustomcash.png", "Citi Custom Cash", "Personal", "Citi",true,5.0),
-    new Card(3,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedomunlimitedcard.png", "Chase Freedom Unlimited", "Personal", "Chase",false,5.0),
-    new Card(4,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkpreferredcard.png", "Chase Ink Preferred Card", "Buisness", "Chase",false,4.0),
-    new Card(5,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkcash.png", "Chase Ink Cash Card", "Buisness", "Chase",false,5.0),
-    new Card(6,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/inkunlimitedcard.png", "Chase Ink Unlimited Card", "Buisness", "Chase",false,5.0),
-    new Card(8, "https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/costcoanywherecard.png","Costco Anywhere Visa Card", "Personal", "Citi",true,5.0),
-    new Card(9,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexplatinum.png","Amex Platnium Card", "Personal", "Amex",true,3.0),
-    new Card(10,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexbluecashpreferred.jpg","Amex Blue Cash Preferred", "Personal", "Amex",true,4.0),
-    new Card(11,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/amexbluecash.jpg","Amex Blue Card", "Personal", "Amex",false,4.5),
-    new Card(12,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/venturexcard.jpg","Capital One Venture Card", "Personal", "Capital One",4.5),
-    new Card(13,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/southwestpluscard.png","Chase Southwest Plus Card", "Personal", "Chase",true,4.0),
-    new Card(14,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/unitedexplorercard.png","Chase United Explorer Card", "Personal", "Chase",true,4.0),
-    new Card(15,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/primevisacard.png","Chase Prime Visa Card", "Personal", "Chase",true,4.8),
-    new Card(16,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wellsfargoautograph.png","Wells Fargo Autograph", "Personal", "Wells Fargo",false,4.3),
-    new Card(17,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wellsfargoreflect.png","Wells Fargo Reflect", "Personal", "Wells Fargo",false,4.3),
-    new Card(18,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/wfactivecash.png","Wells Fargo Active Cash", "Personal", "Wells Fargo",false,5.0),
-    new Card(19,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedomflexcard.png","Chase Freedom Flex","Personal","Chase",false,5.0),
-    new Card(20,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/mariottbonvoypremier.png","Mariott Bonvoy Premier","Personal","Chase",true,3.5),
-    new Card(21,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/hiltonhonors.jpg","Hilton Honors","Personal","Amex",true,3.5),
-    new Card(22,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/hiltonhonorsamex.png","Hilton Honors","Personal","Amex",true,3.5),
-    new Card(23,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/ihgpremiercard.png","IHG Rewards Card","Personal","Chase",true,3.5),
-    new Card(24,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/sapphirereservecard.png","Chase Sapphire Reserve Card","Personal","Chase",true,5.0),
-    new Card(25,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/discoverit.jpeg","Discover IT Card","Personal","Discover",true,3.5),
-    new Card(25,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/freedom_rise_card.png","Chase Freedom Rise","Personal","Chase",true,3.5),
-    new Card(26,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/slate_edge_card.png", "Chase Slate Edge", "Personal", "Chase",true,3.0),
-    new Card(27,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/bankamericard.png", "Bank of America BankAmericard", "Personal", "Bank of America",true,3.0),
-    new Card(27,"https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/citipremiercard.png", "Citi Premier Card", "Personal", "Citi",true,3.5),
-      ];
-    const Chase = cards.filter(card => card.bank === "Chase");
-    const Citi = cards.filter(card => card.bank === "Citi");
-    const Amex = cards.filter(card => card.bank === "Amex");
-    const CapitalOne = cards.filter(card => card.bank === "Capital One");
-    const WellsFargo = cards.filter(card => card.bank === "Wells Fargo");
-    const BankOfAmerica = cards.filter(card => card.bank === "Bank of America");
-    const Discover = cards.filter(card => card.bank === "Discover");
+  const [banks, setBanks] = useState({
+    chase: [],
+    citi: [],
+    amex: [],
+    capitalOne: [],
+    wellsFargo: [],
+    bankOfAmerica: [],
+    discover: [],
+  });
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadBanks() {
+      try {
+        setLoading(true);
+        setErrorMessage('');
+        const response = await fetch(GRAPHQL_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: BANK_ROWS_QUERY,
+            variables: { size: 300 },
+          }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) throw new Error(`GraphQL request failed with status ${response.status}`);
+        const result = await response.json();
+        if (result.errors?.length) throw new Error(result.errors[0].message || 'GraphQL error while loading bank rows');
+
+        setBanks({
+          chase: (result.data?.chase?.content || []).map(toCard),
+          citi: (result.data?.citi?.content || []).map(toCard),
+          amex: (result.data?.amex?.content || []).map(toCard),
+          capitalOne: (result.data?.capitalOne?.content || []).map(toCard),
+          wellsFargo: (result.data?.wellsFargo?.content || []).map(toCard),
+          bankOfAmerica: (result.data?.bankOfAmerica?.content || []).map(toCard),
+          discover: (result.data?.discover?.content || []).map(toCard),
+        });
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setErrorMessage('Unable to load bank rows right now.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadBanks();
+    return () => controller.abort();
+  }, []);
+
   return (
     <div>
-      <div class="mt-5">
-          <RowScreen title="Chase" cards={Chase}/>
+      {loading && <p>Loading cards...</p>}
+      {errorMessage && <p>{errorMessage}</p>}
+      <div className="mt-5">
+        <RowScreen title="Chase" cards={banks.chase}/>
       </div>
-      <div class="mt-5">
-          <RowScreen title="Citi" cards={Citi}/>
+      <div className="mt-5">
+        <RowScreen title="Citi" cards={banks.citi}/>
       </div>
-      <div class="mt-5">
-          <RowScreen title="Amex" cards={Amex}/>
+      <div className="mt-5">
+        <RowScreen title="Amex" cards={banks.amex}/>
       </div>
-      <div class="mt-5">
-            <RowScreen title="Capital One" cards={CapitalOne}/>
+      <div className="mt-5">
+        <RowScreen title="Capital One" cards={banks.capitalOne}/>
       </div>
-      <div class="mt-5">
-          <RowScreen title="Wells Fargo" cards={WellsFargo}/>
+      <div className="mt-5">
+        <RowScreen title="Wells Fargo" cards={banks.wellsFargo}/>
       </div>
-      <div class="mt-5">
-          <RowScreen title="Bank of America" cards={BankOfAmerica}/>
+      <div className="mt-5">
+        <RowScreen title="Bank of America" cards={banks.bankOfAmerica}/>
       </div>
-      <div class="mt-5">
-          <RowScreen title="Discover" cards={Discover}/>
+      <div className="mt-5">
+        <RowScreen title="Discover" cards={banks.discover}/>
       </div>
     </div>
   )
