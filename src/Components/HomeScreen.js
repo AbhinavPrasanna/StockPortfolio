@@ -19,6 +19,7 @@ const HOME_SCREEN_CARDS_QUERY = `
         hasAnnualFee
         rating
         imageSourceUrl
+        imageS3Key
       }
     }
   }
@@ -54,6 +55,14 @@ function mapGraphqlCardToCard(graphqlCard) {
 function isBusinessCardType(type) {
   const normalizedType = (type || '').toLowerCase();
   return normalizedType.includes('business') || normalizedType === 'buisness';
+}
+
+function hasRealImage(card) {
+  return !card.cardThumbnailURL.includes('dummyimage.com');
+}
+
+function prioritizeCardsWithRealImages(cards) {
+  return [...cards].sort((a, b) => Number(hasRealImage(b)) - Number(hasRealImage(a)));
 }
 
 function HomeScreen() {
@@ -95,8 +104,12 @@ function HomeScreen() {
 
         const allCards = (result.data?.cards?.content || []).map(mapGraphqlCardToCard);
         const dedupedCards = Array.from(new Map(allCards.map((card) => [card.cardID, card])).values());
-        const business = dedupedCards.filter((card) => isBusinessCardType(card.type));
-        const personal = dedupedCards.filter((card) => !isBusinessCardType(card.type));
+        const business = prioritizeCardsWithRealImages(
+          dedupedCards.filter((card) => isBusinessCardType(card.type))
+        );
+        const personal = prioritizeCardsWithRealImages(
+          dedupedCards.filter((card) => !isBusinessCardType(card.type))
+        );
 
         setPersonalCards(personal);
         setBusinessCards(business);
