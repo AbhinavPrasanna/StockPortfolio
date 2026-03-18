@@ -20,6 +20,16 @@ const HOME_SCREEN_CARDS_QUERY = `
         rating
         imageSourceUrl
         imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id
+          cardName
+          cardType
+          cardBank
+          hasAnnualFee
+          rating
+          imageSourceUrl
+          imageS3Key
+        }
       }
     }
   }

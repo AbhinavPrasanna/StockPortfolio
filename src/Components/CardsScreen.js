@@ -17,6 +17,55 @@ const CARDS_BY_ANNUAL_FEE_QUERY = `
         rating
         imageSourceUrl
         imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id
+          cardName
+          cardType
+          cardBank
+          hasAnnualFee
+          rating
+          imageSourceUrl
+          imageS3Key
+        }
+      }
+    }
+    annualFee: cards(page: 0, size: $size, hasAnnualFee: true) {
+      content {
+        id
+        cardName
+        cardType
+        cardBank
+        hasAnnualFee
+        rating
+        imageSourceUrl
+        imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id
+          cardName
+          cardType
+          cardBank
+          hasAnnualFee
+          rating
+          imageSourceUrl
+          imageS3Key
+        }
+      }
+    }
+  }
+`;
+
+const CARDS_BY_ANNUAL_FEE_QUERY_FALLBACK = `
+  query CardsByAnnualFeeFallback($size: Int!) {
+    noAnnualFee: cards(page: 0, size: $size, hasAnnualFee: false) {
+      content {
+        id
+        cardName
+        cardType
+        cardBank
+        hasAnnualFee
+        rating
+        imageSourceUrl
+        imageS3Key
       }
     }
     annualFee: cards(page: 0, size: $size, hasAnnualFee: true) {
@@ -94,8 +143,22 @@ function CardsScreen() {
 
         applyCardsByFeeData(data);
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          setErrorMessage('Unable to load fee-based card data right now.');
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        try {
+          const fallbackData = await fetchGraphqlCached({
+            query: CARDS_BY_ANNUAL_FEE_QUERY_FALLBACK,
+            variables: queryVariables,
+            signal: controller.signal,
+          });
+          applyCardsByFeeData(fallbackData);
+          setErrorMessage('');
+        } catch (fallbackError) {
+          if (fallbackError.name !== 'AbortError') {
+            setErrorMessage('Unable to load fee-based card data right now.');
+          }
         }
       } finally {
         setLoading(false);

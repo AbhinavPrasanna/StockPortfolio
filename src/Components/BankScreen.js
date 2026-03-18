@@ -8,6 +8,67 @@ const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://ab
 const BANK_ROWS_QUERY = `
   query BankRows($size: Int!) {
     chase: cards(page: 0, size: $size, bank: "Chase") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    citi: cards(page: 0, size: $size, bank: "Citi") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    amex: cards(page: 0, size: $size, bank: "Amex") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    capitalOne: cards(page: 0, size: $size, bank: "Capital One") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    wellsFargo: cards(page: 0, size: $size, bank: "Wells Fargo") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    bankOfAmerica: cards(page: 0, size: $size, bank: "Bank of America") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+    discover: cards(page: 0, size: $size, bank: "Discover") {
+      content {
+        id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        relatedCardsByBank(limit: 3) {
+          id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key
+        }
+      }
+    }
+  }
+`;
+
+const BANK_ROWS_QUERY_FALLBACK = `
+  query BankRowsFallback($size: Int!) {
+    chase: cards(page: 0, size: $size, bank: "Chase") {
       content { id cardName cardType cardBank hasAnnualFee rating imageSourceUrl imageS3Key }
     }
     citi: cards(page: 0, size: $size, bank: "Citi") {
@@ -101,8 +162,22 @@ function BankScreen() {
 
         applyBankData(data);
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          setErrorMessage('Unable to load bank rows right now.');
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        try {
+          const fallbackData = await fetchGraphqlCached({
+            query: BANK_ROWS_QUERY_FALLBACK,
+            variables: queryVariables,
+            signal: controller.signal,
+          });
+          applyBankData(fallbackData);
+          setErrorMessage('');
+        } catch (fallbackError) {
+          if (fallbackError.name !== 'AbortError') {
+            setErrorMessage('Unable to load bank rows right now.');
+          }
         }
       } finally {
         setLoading(false);
