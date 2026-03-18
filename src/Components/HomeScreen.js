@@ -4,8 +4,8 @@ import RowScreen from './RowScreen'
 import PreviewScreen from './PreviewScreen';
 import BankScreen from './BankScreen';
 import CardsScreen from './CardsScreen';
+import { fetchGraphqlCached, getCachedGraphqlData } from '../Utils/graphqlClient';
 
-const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
 const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/';
 
 const HOME_SCREEN_CARDS_QUERY = `
@@ -73,46 +73,39 @@ function HomeScreen() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const queryVariables = { size: 300 };
+
+    function applyCardsData(data) {
+      const allCards = (data?.cards?.content || []).map(mapGraphqlCardToCard);
+      const dedupedCards = Array.from(new Map(allCards.map((card) => [card.cardID, card])).values());
+      const business = prioritizeCardsWithRealImages(
+        dedupedCards.filter((card) => isBusinessCardType(card.type))
+      );
+      const personal = prioritizeCardsWithRealImages(
+        dedupedCards.filter((card) => !isBusinessCardType(card.type))
+      );
+
+      setPersonalCards(personal);
+      setBusinessCards(business);
+    }
 
     async function loadHomeCards() {
       try {
-        setLoading(true);
         setErrorMessage('');
 
-        const response = await fetch(GRAPHQL_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: HOME_SCREEN_CARDS_QUERY,
-            variables: {
-              size: 300,
-            },
-          }),
+        const cachedData = getCachedGraphqlData(HOME_SCREEN_CARDS_QUERY, queryVariables);
+        setLoading(!cachedData);
+        if (cachedData) {
+          applyCardsData(cachedData);
+        }
+
+        const data = await fetchGraphqlCached({
+          query: HOME_SCREEN_CARDS_QUERY,
+          variables: queryVariables,
           signal: controller.signal,
         });
 
-        if (!response.ok) {
-          throw new Error(`GraphQL request failed with status ${response.status}`);
-        }
-
-        const result = await response.json();
-        if (result.errors?.length) {
-          throw new Error(result.errors[0].message || 'GraphQL error while loading cards');
-        }
-
-        const allCards = (result.data?.cards?.content || []).map(mapGraphqlCardToCard);
-        const dedupedCards = Array.from(new Map(allCards.map((card) => [card.cardID, card])).values());
-        const business = prioritizeCardsWithRealImages(
-          dedupedCards.filter((card) => isBusinessCardType(card.type))
-        );
-        const personal = prioritizeCardsWithRealImages(
-          dedupedCards.filter((card) => !isBusinessCardType(card.type))
-        );
-
-        setPersonalCards(personal);
-        setBusinessCards(business);
+        applyCardsData(data);
       } catch (error) {
         if (error.name !== 'AbortError') {
           setErrorMessage('Unable to load card data right now.');

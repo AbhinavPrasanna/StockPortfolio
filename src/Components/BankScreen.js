@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Card from './Card'
 import RowScreen from './RowScreen';
+import { fetchGraphqlCached, getCachedGraphqlData } from '../Utils/graphqlClient';
 
-const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
 const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/';
 
 const BANK_ROWS_QUERY = `
@@ -69,34 +69,37 @@ function BankScreen() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const queryVariables = { size: 300 };
+
+    function applyBankData(data) {
+      setBanks({
+        chase: (data?.chase?.content || []).map(toCard),
+        citi: (data?.citi?.content || []).map(toCard),
+        amex: (data?.amex?.content || []).map(toCard),
+        capitalOne: (data?.capitalOne?.content || []).map(toCard),
+        wellsFargo: (data?.wellsFargo?.content || []).map(toCard),
+        bankOfAmerica: (data?.bankOfAmerica?.content || []).map(toCard),
+        discover: (data?.discover?.content || []).map(toCard),
+      });
+    }
 
     async function loadBanks() {
       try {
-        setLoading(true);
         setErrorMessage('');
-        const response = await fetch(GRAPHQL_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: BANK_ROWS_QUERY,
-            variables: { size: 300 },
-          }),
+
+        const cachedData = getCachedGraphqlData(BANK_ROWS_QUERY, queryVariables);
+        setLoading(!cachedData);
+        if (cachedData) {
+          applyBankData(cachedData);
+        }
+
+        const data = await fetchGraphqlCached({
+          query: BANK_ROWS_QUERY,
+          variables: queryVariables,
           signal: controller.signal,
         });
 
-        if (!response.ok) throw new Error(`GraphQL request failed with status ${response.status}`);
-        const result = await response.json();
-        if (result.errors?.length) throw new Error(result.errors[0].message || 'GraphQL error while loading bank rows');
-
-        setBanks({
-          chase: (result.data?.chase?.content || []).map(toCard),
-          citi: (result.data?.citi?.content || []).map(toCard),
-          amex: (result.data?.amex?.content || []).map(toCard),
-          capitalOne: (result.data?.capitalOne?.content || []).map(toCard),
-          wellsFargo: (result.data?.wellsFargo?.content || []).map(toCard),
-          bankOfAmerica: (result.data?.bankOfAmerica?.content || []).map(toCard),
-          discover: (result.data?.discover?.content || []).map(toCard),
-        });
+        applyBankData(data);
       } catch (error) {
         if (error.name !== 'AbortError') {
           setErrorMessage('Unable to load bank rows right now.');

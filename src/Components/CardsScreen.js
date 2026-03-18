@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import Card from './Card'
 import RowScreen from './RowScreen';
+import { fetchGraphqlCached, getCachedGraphqlData } from '../Utils/graphqlClient';
 
-const GRAPHQL_ENDPOINT = process.env.REACT_APP_GRAPHQL_URL || 'http://localhost:8080/graphql';
 const S3_IMAGE_BASE_URL = process.env.REACT_APP_S3_IMAGE_BASE_URL || 'https://abhinav-credit-card-images-2.s3.us-west-1.amazonaws.com/';
 
 const CARDS_BY_ANNUAL_FEE_QUERY = `
@@ -69,37 +69,30 @@ function CardsScreen() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const queryVariables = { size: 300 };
+
+    function applyCardsByFeeData(data) {
+      setNoAnnualFeeCards((data?.noAnnualFee?.content || []).map(mapGraphqlCardToCard));
+      setAnnualFeeCards((data?.annualFee?.content || []).map(mapGraphqlCardToCard));
+    }
 
     async function loadCardsByAnnualFee() {
       try {
-        setLoading(true);
         setErrorMessage('');
 
-        const response = await fetch(GRAPHQL_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            query: CARDS_BY_ANNUAL_FEE_QUERY,
-            variables: {
-              size: 300,
-            },
-          }),
+        const cachedData = getCachedGraphqlData(CARDS_BY_ANNUAL_FEE_QUERY, queryVariables);
+        setLoading(!cachedData);
+        if (cachedData) {
+          applyCardsByFeeData(cachedData);
+        }
+
+        const data = await fetchGraphqlCached({
+          query: CARDS_BY_ANNUAL_FEE_QUERY,
+          variables: queryVariables,
           signal: controller.signal,
         });
 
-        if (!response.ok) {
-          throw new Error(`GraphQL request failed with status ${response.status}`);
-        }
-
-        const result = await response.json();
-        if (result.errors?.length) {
-          throw new Error(result.errors[0].message || 'GraphQL error while loading fee-based cards');
-        }
-
-        setNoAnnualFeeCards((result.data?.noAnnualFee?.content || []).map(mapGraphqlCardToCard));
-        setAnnualFeeCards((result.data?.annualFee?.content || []).map(mapGraphqlCardToCard));
+        applyCardsByFeeData(data);
       } catch (error) {
         if (error.name !== 'AbortError') {
           setErrorMessage('Unable to load fee-based card data right now.');
