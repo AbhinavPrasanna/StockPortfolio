@@ -176,7 +176,8 @@ function BankScreen() {
           setErrorMessage('');
         } catch (fallbackError) {
           if (fallbackError.name !== 'AbortError') {
-            setErrorMessage('Unable to load bank rows right now.');
+            const detail = fallbackError?.message ? ` (${fallbackError.message})` : '';
+            setErrorMessage(`Unable to load bank rows right now${detail}.`);
           }
         }
       } finally {

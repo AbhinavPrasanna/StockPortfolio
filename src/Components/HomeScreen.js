@@ -35,6 +35,23 @@ const HOME_SCREEN_CARDS_QUERY = `
   }
 `;
 
+const HOME_SCREEN_CARDS_QUERY_FALLBACK = `
+  query HomeScreenCardsFallback($size: Int!) {
+    cards(page: 0, size: $size) {
+      content {
+        id
+        cardName
+        cardType
+        cardBank
+        hasAnnualFee
+        rating
+        imageSourceUrl
+        imageS3Key
+      }
+    }
+  }
+`;
+
 function resolveImageUrl(graphqlCard) {
   if (graphqlCard.imageSourceUrl) {
     return graphqlCard.imageSourceUrl;
@@ -117,8 +134,23 @@ function HomeScreen() {
 
         applyCardsData(data);
       } catch (error) {
-        if (error.name !== 'AbortError') {
-          setErrorMessage('Unable to load card data right now.');
+        if (error.name === 'AbortError') {
+          return;
+        }
+
+        try {
+          const fallbackData = await fetchGraphqlCached({
+            query: HOME_SCREEN_CARDS_QUERY_FALLBACK,
+            variables: queryVariables,
+            signal: controller.signal,
+          });
+          applyCardsData(fallbackData);
+          setErrorMessage('');
+        } catch (fallbackError) {
+          if (fallbackError.name !== 'AbortError') {
+            const detail = fallbackError?.message ? ` (${fallbackError.message})` : '';
+            setErrorMessage(`Unable to load card data right now${detail}.`);
+          }
         }
       } finally {
         setLoading(false);

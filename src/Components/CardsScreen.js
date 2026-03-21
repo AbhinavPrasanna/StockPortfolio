@@ -157,7 +157,8 @@ function CardsScreen() {
           setErrorMessage('');
         } catch (fallbackError) {
           if (fallbackError.name !== 'AbortError') {
-            setErrorMessage('Unable to load fee-based card data right now.');
+            const detail = fallbackError?.message ? ` (${fallbackError.message})` : '';
+            setErrorMessage(`Unable to load fee-based card data right now${detail}.`);
           }
         }
       } finally {
