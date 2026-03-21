@@ -48,7 +48,6 @@ function Navbar() {
                         <Nav className="ms-lg-4 gap-lg-3 align-items-lg-center w-100">
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/bank")}>Banks</button>
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/cards")}>Cards</button>
-                            <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/ratings")}>Ranked</button>
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/articles")}>Articles</button>
                             <Form className="ms-lg-3">
                                 <FormControl

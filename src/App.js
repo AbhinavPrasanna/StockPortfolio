@@ -9,7 +9,6 @@ import Navbar from './Components/Navbar';
 import CardsScreen from './Components/CardsScreen';
 import SearchScreen from './Components/SearchScreen';
 import BankScreen from './Components/BankScreen';
-import RatingScreen from './Components/RatingScreen';
 import HomeScreen from './Components/HomeScreen';
 import ArticlesScreen from './Components/ArticlesScreen';
 import CardDetailsScreen from './Components/CardDetailsScreen';
@@ -27,7 +26,6 @@ function App() {
         <Route path="/cards" element={<CardsScreen />} />
         <Route path="/search" element={<SearchScreen />} />
         <Route path="/bank" element={<BankScreen />} />
-        <Route path="/ratings" element={<RatingScreen />} />  
         <Route path="/articles" element={<ArticlesScreen/>} />
         <Route path="/article-details" element={<ArticleDetailsScreen />} />
         <Route path="/card-details" element={<CardDetailsScreen />} />
