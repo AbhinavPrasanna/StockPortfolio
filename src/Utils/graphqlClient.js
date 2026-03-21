@@ -90,40 +90,28 @@ export function getCachedGraphqlData(query, variables) {
 
 export async function fetchGraphqlCached({ query, variables, signal, ttlMs = DEFAULT_TTL_MS }) {
   const key = buildCacheKey(query, variables);
-  const now = Date.now();
   const cachedEntry = queryCache.get(key);
 
-  if (cachedEntry && cachedEntry.expiresAt > now) {
-    if (cachedEntry.promise) {
-      return cachedEntry.promise;
-    }
+  if (cachedEntry && cachedEntry.expiresAt > Date.now()) {
     return cachedEntry.data || {};
   }
 
-  const requestPromise = fetchGraphql({ query, variables, signal })
-    .then((data) => {
-      const hasPayload = data && typeof data === 'object' && Object.keys(data).length > 0;
-      if (hasPayload) {
-        queryCache.set(key, {
-          data,
-          expiresAt: Date.now() + ttlMs,
-        });
-      } else {
-        queryCache.delete(key);
-      }
-      return data;
-    })
-    .catch((error) => {
+  try {
+    const data = await fetchGraphql({ query, variables, signal });
+    const hasPayload = data && typeof data === 'object' && Object.keys(data).length > 0;
+    if (hasPayload) {
+      queryCache.set(key, {
+        data,
+        expiresAt: Date.now() + ttlMs,
+      });
+    } else {
       queryCache.delete(key);
-      throw error;
-    });
-
-  queryCache.set(key, {
-    promise: requestPromise,
-    expiresAt: now + ttlMs,
-  });
-
-  return requestPromise;
+    }
+    return data;
+  } catch (error) {
+    queryCache.delete(key);
+    throw error;
+  }
 }
 
 export function invalidateGraphqlCache() {
