@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Container, Form, FormControl, Nav, Navbar as BootstrapNavbar } from 'react-bootstrap';
+import React from 'react';
+import { Button, Container, Nav, Navbar as BootstrapNavbar } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 import { useAuth } from '../Contexts/AuthContext';
@@ -9,20 +9,6 @@ import '../Stylesheets/Buttons.css';
 function Navbar() {
     const { isLoggedIn, setIsLoggedIn } = useAuth();
     const navigate = useNavigate();
-
-    const [searchWord, setSearchWord] = useState("");
-
-    useEffect(() => {
-        if (searchWord !== "" && searchWord) {
-            navigate("/search", { state: { searchWord: searchWord } });
-        }
-    }, [searchWord, navigate]);
- 
-    const handleSearch = (e) => {
-        if (e.target.value !== '' && e.target.value) {
-            setSearchWord(e.target.value);
-        }
-    };
 
     const handleLogout = () => {
       Auth.signOut().then(() => {
@@ -49,14 +35,7 @@ function Navbar() {
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/bank")}>Banks</button>
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/cards")}>Cards</button>
                             <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/articles")}>Articles</button>
-                            <Form className="ms-lg-3">
-                                <FormControl
-                                    className="navbar-search navbar-link-text"
-                                    placeholder="Search"
-                                    aria-label="Search cards"
-                                    onChange={handleSearch}
-                                />
-                            </Form>
+                            <button className="TransparentButton2 navbar-link-text" onClick={() => navigate("/optimizer")}>Optimizer</button>
                             <div className="ms-lg-auto d-flex align-items-center gap-2">
                                 {isLoggedIn ? (
                                     <Button className="navbar-auth-text navbar-signup-btn" onClick={handleLogout}>Logout</Button>

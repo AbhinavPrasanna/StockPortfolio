@@ -39,13 +39,6 @@
     background-color: transparent;
 }
 
-.navbar-search {
-    max-width: 220px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
-    background-color: rgba(255, 255, 255, 0.8);
-}
-
 .navbar-link-text {
     color: rgba(0, 0, 0, 0.6);
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -57,13 +50,6 @@
 
 .navbar-link-text:hover {
     color: rgba(0, 0, 0, 0.8);
-}
-
-.navbar-search::placeholder {
-    color: rgba(0, 0, 0, 0.6);
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.3px;
 }
 
 .navbar-auth-text {
