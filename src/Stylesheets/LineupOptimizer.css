@@ -246,3 +246,44 @@
     text-align: center;
     padding: 2rem;
 }
+
+/* Hotel preference checkboxes */
+.optimizer-hotel-checkbox {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #374151;
+    cursor: pointer;
+    user-select: none;
+}
+
+.optimizer-hotel-checkbox .form-check-input {
+    width: 1.1em;
+    height: 1.1em;
+    cursor: pointer;
+}
+
+.optimizer-hotel-checkbox .form-check-input:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+    accent-color: #2563eb;
+}
+
+/* Hotel chain badges on result cards */
+.optimizer-hotel-badge {
+    display: inline-block;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.optimizer-hotel-badge--preferred {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    border-color: #93c5fd;
+}

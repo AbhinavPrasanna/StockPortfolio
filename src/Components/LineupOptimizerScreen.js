@@ -22,6 +22,10 @@ const OPTIMIZE_LINEUP_QUERY = `
           imageSourceUrl
           imageS3Key
           cashbackFlat
+          cashbackChoiceHotels
+          cashbackHyattHotels
+          cashbackHiltonHotels
+          cashbackMarriottHotels
         }
         assignedCategories {
           category
@@ -40,6 +44,13 @@ const OPTIMIZE_LINEUP_QUERY = `
     }
   }
 `;
+
+const HOTEL_CHAINS = [
+  { key: 'preferChoiceHotels', label: 'Choice Hotels', icon: '🏨' },
+  { key: 'preferHyattHotels', label: 'Hyatt', icon: '🏨' },
+  { key: 'preferHiltonHotels', label: 'Hilton', icon: '🏨' },
+  { key: 'preferMarriottHotels', label: 'Marriott', icon: '🏨' },
+];
 
 const CATEGORY_LABELS = {
   travel: 'Travel',
@@ -81,11 +92,21 @@ function formatCurrency(value) {
   return `$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+function getHotelBadges(card) {
+  const badges = [];
+  if (card.cashbackChoiceHotels) badges.push('Choice Hotels');
+  if (card.cashbackHyattHotels) badges.push('Hyatt');
+  if (card.cashbackHiltonHotels) badges.push('Hilton');
+  if (card.cashbackMarriottHotels) badges.push('Marriott');
+  return badges;
+}
+
 function LineupOptimizerScreen() {
   const [creditScore, setCreditScore] = useState(750);
   const [spending, setSpending] = useState(
     SPENDING_FIELDS.reduce((acc, f) => ({ ...acc, [f.key]: 0 }), {})
   );
+  const [selectedHotel, setSelectedHotel] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -97,6 +118,10 @@ function LineupOptimizerScreen() {
     setSpending((prev) => ({ ...prev, [key]: isNaN(parsed) ? 0 : parsed }));
   }
 
+  function handleHotelPrefChange(key) {
+    setSelectedHotel((prev) => (prev === key ? null : key));
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
@@ -106,6 +131,9 @@ function LineupOptimizerScreen() {
     const input = { creditScore: parseInt(creditScore, 10) || 750 };
     SPENDING_FIELDS.forEach((f) => {
       input[f.key] = parseFloat(spending[f.key]) || 0;
+    });
+    HOTEL_CHAINS.forEach((h) => {
+      input[h.key] = selectedHotel === h.key;
     });
 
     try {
@@ -192,6 +220,41 @@ function LineupOptimizerScreen() {
             </Card.Body>
           </Card>
 
+          <Card className="optimizer-form-card mb-4">
+            <Card.Header>
+              <h2 className="optimizer-section-title">Hotel Preferences</h2>
+            </Card.Header>
+            <Card.Body>
+              <p className="text-muted mb-3" style={{ fontSize: '0.9rem' }}>
+                Select hotel chains you stay at. Cards with cashback restricted to a specific chain
+                will be scored higher if it matches your preference, and lower if it does not.
+              </p>
+              <div className="d-flex flex-wrap gap-3">
+                {HOTEL_CHAINS.map((h) => (
+                  <Form.Check
+                    key={h.key}
+                    type="radio"
+                    id={`hotel-${h.key}`}
+                    name="hotelPreference"
+                    label={h.label}
+                    checked={selectedHotel === h.key}
+                    onChange={() => handleHotelPrefChange(h.key)}
+                    className="optimizer-hotel-checkbox"
+                  />
+                ))}
+                <Form.Check
+                  type="radio"
+                  id="hotel-none"
+                  name="hotelPreference"
+                  label="No preference"
+                  checked={selectedHotel === null}
+                  onChange={() => setSelectedHotel(null)}
+                  className="optimizer-hotel-checkbox"
+                />
+              </div>
+            </Card.Body>
+          </Card>
+
           <div className="text-center mb-4">
             <Button
               type="submit"
@@ -268,6 +331,26 @@ function LineupOptimizerScreen() {
                           </span>
                         ))}
                       </div>
+
+                      {getHotelBadges(entry.card).length > 0 && (
+                        <div className="d-flex flex-wrap gap-1 mb-2">
+                          {getHotelBadges(entry.card).map((chain) => {
+                            const isPreferred =
+                              (chain === 'Choice Hotels' && selectedHotel === 'preferChoiceHotels') ||
+                              (chain === 'Hyatt' && selectedHotel === 'preferHyattHotels') ||
+                              (chain === 'Hilton' && selectedHotel === 'preferHiltonHotels') ||
+                              (chain === 'Marriott' && selectedHotel === 'preferMarriottHotels');
+                            return (
+                              <span
+                                key={chain}
+                                className={`optimizer-hotel-badge${isPreferred ? ' optimizer-hotel-badge--preferred' : ''}`}
+                              >
+                                🏨 {chain}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
 
                       <div className="optimizer-card-values mt-auto">
                         <div className="optimizer-value-block">
